@@ -53,8 +53,8 @@ if (!defined ("CLASS_direct_file"))
 {
 //c// direct_file
 /**
-* Abstraction layer for file operations including auto-delete if empty and
-* alternative locking.
+* Currently we have only really basic functions - now we want to introduce
+* some more.
 *
 * @author     direct Netware Group
 * @copyright  (C) direct Netware Group - All rights reserved
@@ -69,44 +69,44 @@ class direct_file
 /**
 	* @var mixed $chmod chmod to set when creating a new file
 */
-	/*#ifndef(PHP4) */protected /* #*//*#ifdef(PHP4):var :#*/$chmod;
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $chmod;
 /**
 	* @var array $debug Debug message container 
 */
-	/*#ifndef(PHP4) */public /* #*//*#ifdef(PHP4):var :#*/$debug;
+	/*#ifndef(PHP4) */public/* #*//*#ifdef(PHP4):var:#*/ $debug;
 /**
 	* @var boolean $debugging True if we should fill the debug message
 	*      container 
 */
-	/*#ifndef(PHP4) */protected /* #*//*#ifdef(PHP4):var :#*/$debugging;
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $debugging;
 /**
 	* @var boolean $readonly True if file is opened read-only
 */
-	/*#ifndef(PHP4) */protected /* #*//*#ifdef(PHP4):var :#*/$readonly;
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $readonly;
 /**
 	* @var resource $resource Resource to the opened file
 */
-	/*#ifndef(PHP4) */protected /* #*//*#ifdef(PHP4):var :#*/$resource;
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $resource;
 /**
 	* @var string $resource_file_path Filename for the resource pointer
 */
-	/*#ifndef(PHP4) */protected /* #*//*#ifdef(PHP4):var :#*/$resource_file_path;
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $resource_file_path;
 /**
 	* @var string $resource_lock Current locking mode
 */
-	/*#ifndef(PHP4) */protected /* #*//*#ifdef(PHP4):var :#*/$resource_lock;
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $resource_lock;
 /**
 	* @var integer $time Current UNIX timestamp
 */
-	/*#ifndef(PHP4) */protected /* #*//*#ifdef(PHP4):var :#*/$time;
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $time;
 /**
 	* @var integer $timeout_count Retries before timing out
 */
-	/*#ifndef(PHP4) */protected /* #*//*#ifdef(PHP4):var :#*/$timeout_count;
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $timeout_count;
 /**
 	* @var mixed $umask umask to set before creating a new file
 */
-	/*#ifndef(PHP4) */protected /* #*//*#ifdef(PHP4):var :#*/$umask;
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $umask;
 
 /* -------------------------------------------------------------------------
 Construct the class using old and new behavior

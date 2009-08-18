@@ -132,10 +132,7 @@ Construct the class using old and new behavior
 		$this->resource = NULL;
 		$this->resource_file_path = "";
 		$this->resource_lock = "r";
-
-		if ($f_time < 0) { $this->time = time (); }
-		else { $this->time = $f_time; }
-
+		$this->time = (($f_time < 0) ? time () : $f_time);
 		$this->timeout_count = $f_timeout_count;
 		$this->umask = $f_umask;
 	}
@@ -287,9 +284,7 @@ Construct the class using old and new behavior
 					{
 						$f_return = true;
 						$f_timeout_count = -1;
-
-						if ($f_mode == "w") { $this->resource_lock = "w"; }
-						else { $this->resource_lock = "r"; }
+						$this->resource_lock = (($f_mode == "w") ? "w" : "r");
 					}
 					else
 					{
@@ -364,11 +359,7 @@ want to delete unneeded files.
 					else { $f_return = true; }
 				}
 			}
-			else
-			{
-				if ($f_mode == "w") { $f_return = @flock ($this->resource,LOCK_EX); }
-				else { $f_return = @flock ($this->resource,LOCK_SH); }
-			}
+			else { $f_return = (($f_mode == "w") ? @flock ($this->resource,LOCK_EX) : @flock ($this->resource,LOCK_SH)); }
 		}
 
 		return $f_return;
@@ -395,15 +386,11 @@ want to delete unneeded files.
 		{
 			$f_bytes_unread = $f_bytes;
 			$f_return = "";
-
-			if ($f_timeout < 0) { $f_timeout_time = ($this->time + $this->timeout_count); }
-			else { $f_timeout_time = ($this->time + $f_timeout); }
+			$f_timeout_time = (($f_timeout < 0) ? ($this->time + $this->timeout_count) : ($this->time + $f_timeout));
 
 			do
 			{
-				if (($f_bytes_unread > 4096)||(!$f_bytes)) { $f_part_size = 4096; }
-				else { $f_part_size = $f_bytes_unread; }
-
+				$f_part_size = ((($f_bytes_unread > 4096)||(!$f_bytes)) ? 4096 : $f_bytes_unread);
 				$f_return .= fread ($this->resource,$f_part_size);
 				if ($f_bytes) { $f_bytes_unread -= $f_part_size; }
 			}
@@ -539,17 +526,13 @@ want to delete unneeded files.
 
 		if ($this->lock ("w"))
 		{
-			if ($f_timeout < 0) { $f_timeout_time = ($this->time + $this->timeout_count); }
-			else { $f_timeout_time = ($this->time + $f_timeout); }
-
 			$f_bytes_unwritten = strlen ($f_data);
 			$f_bytes_written = 0;
+			$f_timeout_time = (($f_timeout < 0) ? ($this->time + $this->timeout_count) : ($this->time + $f_timeout));
 
 			do
 			{
-				if (($f_bytes_unwritten > 4096)||(!$f_bytes)) { $f_part_size = 4096; }
-				else { $f_part_size = $f_bytes_unwritten; }
-
+				$f_part_size = ((($f_bytes_unwritten > 4096)||(!$f_bytes)) ? 4096 : $f_bytes_unwritten);
 				$f_return .= fwrite ($this->resource,(substr ($f_data,$f_bytes_written,$f_part_size)),$f_part_size);
 
 				if ($f_return)

@@ -532,7 +532,7 @@ want to delete unneeded files.
 
 			do
 			{
-				$f_part_size = ((($f_bytes_unwritten > 4096)||(!$f_bytes)) ? 4096 : $f_bytes_unwritten);
+				$f_part_size = (($f_bytes_unwritten > 4096) ? 4096 : $f_bytes_unwritten);
 				$f_return .= fwrite ($this->resource,(substr ($f_data,$f_bytes_written,$f_part_size)),$f_part_size);
 
 				if ($f_return)

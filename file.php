@@ -70,12 +70,12 @@ class direct_file
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $chmod;
 /**
-	* @var array $debug Debug message container 
+	* @var array $debug Debug message container
 */
 	/*#ifndef(PHP4) */public/* #*//*#ifdef(PHP4):var:#*/ $debug;
 /**
 	* @var boolean $debugging True if we should fill the debug message
-	*      container 
+	*      container
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $debugging;
 /**
@@ -125,8 +125,8 @@ Construct the class using old and new behavior
 	/*#ifndef(PHP4) */public /* #*/function __construct ($f_umask = NULL,$f_chmod = NULL,$f_time = -1,$f_timeout_count = 5,$f_debug = false)
 	{
 		$this->debugging = $f_debug;
-
 		if ($this->debugging) { $this->debug = array ("file/#echo(__FILEPATH__)# -file->__construct (direct_file)- (#echo(__LINE__)#)"); }
+
 		$this->chmod = $f_chmod;
 		$this->readonly = false;
 		$this->resource = NULL;
@@ -159,8 +159,6 @@ Construct the class using old and new behavior
 	{
 		$this->close ();
 		$this->resource = NULL;
-		$this->resource_file_path = "";
-		$this->resource_lock = "r";
 	}
 
 	//f// direct_file->close ($f_delete_empty = true)
@@ -202,6 +200,7 @@ Construct the class using old and new behavior
 				if (is_writable ($this->resource_file_path)) { $f_return = @unlink ($this->resource_file_path); }
 			}
 
+			$this->readonly = false;
 			$this->resource = NULL;
 			$this->resource_file_path = "";
 		}
@@ -272,7 +271,7 @@ Construct the class using old and new behavior
 
 		if (is_resource ($this->resource))
 		{
-			if (($f_mode == "w")&&($this->readonly)) { trigger_error ("file/#echo(__FILEPATH__)# -file->lock ()- (#echo(__LINE__)#) reports: File resource is in readonly mode",E_USER_NOTICE); }
+			if (($f_mode == "w")&&($this->readonly)) { trigger_error ("file/#echo(__FILEPATH__)# -file->lock ()- (#echo(__LINE__)#) reporting: File resource is in readonly mode",E_USER_NOTICE); }
 			elseif ($f_mode == $this->resource_lock) { $f_return = true; }
 			else
 			{
@@ -294,10 +293,10 @@ Construct the class using old and new behavior
 				}
 				while ($f_timeout_count > 0);
 
-				if ($f_timeout_count > -1) { trigger_error ("file/#echo(__FILEPATH__)# -file->lock ()- (#echo(__LINE__)#) reports: File lock change failed",E_USER_ERROR); }
+				if ($f_timeout_count > -1) { trigger_error ("file/#echo(__FILEPATH__)# -file->lock ()- (#echo(__LINE__)#) reporting: File lock change failed",E_USER_ERROR); }
 			}
 		}
-		else { trigger_error ("file/#echo(__FILEPATH__)# -file->lock ()- (#echo(__LINE__)#) reports: File resource invalid",E_USER_WARNING); }
+		else { trigger_error ("file/#echo(__FILEPATH__)# -file->lock ()- (#echo(__LINE__)#) reporting: File resource invalid",E_USER_WARNING); }
 
 		return $f_return;
 	}
@@ -349,15 +348,10 @@ want to delete unneeded files.
 				if ($f_mode == "w")
 				{
 					if (($f_locked_check)&&($this->resource_lock == "w")) { $f_return = true; }
-					elseif ($f_locked_check) { $f_return = false; }
-					else { $f_return = @touch ($f_file_path.".lock"); }
+					elseif (!$f_locked_check) { $f_return = @touch ($f_file_path.".lock"); }
 				}
-				else
-				{
-					if (($f_locked_check)&&($this->resource_lock == "w")) { $f_return = @unlink ($f_file_path.".lock"); }
-					elseif ($f_locked_check) { $f_return = false; }
-					else { $f_return = true; }
-				}
+				elseif (($f_locked_check)&&($this->resource_lock == "w")) { $f_return = @unlink ($f_file_path.".lock"); }
+				elseif (!$f_locked_check) { $f_return = true; }
 			}
 			else { $f_return = (($f_mode == "w") ? @flock ($this->resource,LOCK_EX) : @flock ($this->resource,LOCK_SH)); }
 		}
@@ -399,7 +393,7 @@ want to delete unneeded files.
 			if (($f_bytes_unread > 0)||((!$f_bytes)&&(!feof ($this->resource))))
 			{
 				$f_return = false;
-				trigger_error ("file/#echo(__FILEPATH__)# -file->read ()- (#echo(__LINE__)#) reports: Timeout occured before EOF",E_USER_ERROR);
+				trigger_error ("file/#echo(__FILEPATH__)# -file->read ()- (#echo(__LINE__)#) reporting: Timeout occured before EOF",E_USER_ERROR);
 			}
 		}
 
@@ -483,7 +477,7 @@ want to delete unneeded files.
 			else { $f_return = false; }
 
 			if ($f_return) { $this->resource = @fopen ($f_file_path,$f_file_mode); }
-			else { trigger_error ("file/#echo(__FILEPATH__)# -file->open ()- (#echo(__LINE__)#) reports: Failed opening $f_file_path - file does not exist",E_USER_NOTICE); }
+			else { trigger_error ("file/#echo(__FILEPATH__)# -file->open ()- (#echo(__LINE__)#) reporting: Failed opening $f_file_path - file does not exist",E_USER_NOTICE); }
 
 			if (is_resource ($this->resource))
 			{
@@ -533,7 +527,7 @@ want to delete unneeded files.
 			do
 			{
 				$f_part_size = (($f_bytes_unwritten > 4096) ? 4096 : $f_bytes_unwritten);
-				$f_return .= fwrite ($this->resource,(substr ($f_data,$f_bytes_written,$f_part_size)),$f_part_size);
+				$f_return = fwrite ($this->resource,(substr ($f_data,$f_bytes_written,$f_part_size)),$f_part_size);
 
 				if ($f_return)
 				{
@@ -546,8 +540,9 @@ want to delete unneeded files.
 			if ($f_bytes_unwritten > 0)
 			{
 				$f_return = false;
-				trigger_error ("file/#echo(__FILEPATH__)# -file->write ()- (#echo(__LINE__)#) reports: Timeout occured before EOF",E_USER_ERROR);
+				trigger_error ("file/#echo(__FILEPATH__)# -file->write ()- (#echo(__LINE__)#) reporting: Timeout occured before EOF",E_USER_ERROR);
 			}
+			else { $f_return = true; }
 		}
 
 		return $f_return;

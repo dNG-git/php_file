@@ -22,9 +22,8 @@ NOTE_END //n*/"""
 """/**
 File functions class to use some advanced locking mechanisms.
 
-@internal   We are using JavaDoc to automate the documentation process for
-            creating the Developer's Manual. All sections including these
-            special comments will be removed from the release source code.
+@internal   We are using epydoc (JavaDoc style) to automate the
+            documentation process for creating the Developer's Manual.
             Use the following line to ensure 76 character sizes:
 ----------------------------------------------------------------------------
 @author     direct Netware Group
@@ -77,13 +76,9 @@ Error type: An error occured and was handled
 	"""
 chmod to set when creating a new file
 	"""
-	debug = [ ]
+	debug = None
 	"""
 Debug message container
-	"""
-	debugging = False
-	"""
-True if we should fill the debug message container
 	"""
 	error_callback = None
 	"""
@@ -124,7 +119,7 @@ umask to set before creating a new file
 
 	"""
 ----------------------------------------------------------------------------
-Construct the class using old and new behavior
+Construct the class
 ----------------------------------------------------------------------------
 	"""
 
@@ -142,8 +137,8 @@ Constructor __init__ (direct_file)
 @since v0.1.00
 		"""
 
-		self.debugging = f_debug
-		if (self.debugging): self.debug = [ "file/#echo(__FILEPATH__)# -file->__init__ (direct_file)- (#echo(__LINE__)#)" ]
+		if (f_debug): self.debug = [ "file/#echo(__FILEPATH__)# -file->__init__ (direct_file)- (#echo(__LINE__)#)" ]
+		else: self.debug = None
 
 		if (f_chmod == None): self.chmod = f_chmod
 		else:
@@ -214,7 +209,7 @@ Closes an active file session.
 		"""
 
 		global _direct_file_locking_alternative
-		if (self.debugging): self.debug.append ("file/#echo(__FILEPATH__)# -file->close (+f_delete_emtpy)- (#echo(__LINE__)#)")
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file->close (+f_delete_emtpy)- (#echo(__LINE__)#)")
 		f_return = False
 
 		if (self.resource != None):
@@ -232,18 +227,21 @@ Closes an active file session.
 
 			if ((self.resource_lock == "w") and (_direct_file_locking_alternative)):
 			#
-				if (path.exists (path.normpath ("%s.lock" % self.resource_file_path))):
+				f_lock_path_os = path.normpath ("%s.lock" % self.resource_file_path)
+
+				if (path.exists (f_lock_path_os)):
 				#
-					try: os.unlink ("%s.lock" % self.resource_file_path)
+					try: os.unlink (f_lock_pat_os)
 					except Exception,f_unhandled_exception: pass
 				#
 			#
 
 			if ((not self.readonly) and (f_delete_empty) and (f_file_position < 0)):
 			#
+				f_file_path_os = path.normpath (self.resource_file_path)
 				f_return = True
 
-				try: os.unlink (self.resource_file_path)
+				try: os.unlink (f_file_path_os)
 				except Exception,f_handled_exception: f_return = False
 			#
 
@@ -265,7 +263,7 @@ Checks if the pointer is at EOF.
 @since  v0.1.00
 		"""
 
-		if (self.debugging): self.debug.append ("file/#echo(__FILEPATH__)# -file->eof_check ()- (#echo(__LINE__)#)")
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file->eof_check ()- (#echo(__LINE__)#)")
 
 		if ((self.resource == None) or (self.resource.tell () == self.resource_file_size)): return True
 		else: return False
@@ -280,7 +278,7 @@ Returns the file pointer.
 @since  v0.1.00
 		"""
 
-		if (self.debugging): self.debug.append ("file/#echo(__FILEPATH__)# -file->get_handle ()- (#echo(__LINE__)#)")
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file->get_handle ()- (#echo(__LINE__)#)")
 
 		if (self.resource == None): return False
 		else: return self.resource
@@ -295,7 +293,7 @@ Returns the current offset.
 @since  v0.1.00
 		"""
 
-		if (self.debugging): self.debug.append ("file/#echo(__FILEPATH__)# -file->get_position ()- (#echo(__LINE__)#)")
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file->get_position ()- (#echo(__LINE__)#)")
 
 		if (self.resource == None): return False
 		else: return self.resource.tell ()
@@ -311,7 +309,7 @@ Changes file locking if needed.
 @since  v0.1.00
 		"""
 
-		if (self.debugging): self.debug.append ("file/#echo(__FILEPATH__)# -file->lock (%s)- (#echo(__LINE__)#)" % f_mode)
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file->lock (%s)- (#echo(__LINE__)#)" % f_mode)
 		f_return = False
 
 		if (self.resource == None): self.trigger_error ("file/#echo(__FILEPATH__)# -file->lock ()- (#echo(__LINE__)#) reporting: File resource invalid",self.E_WARNING)
@@ -360,25 +358,26 @@ Runs flock or an alternative locking mechanism.
 		"""
 
 		global _direct_file_locking_alternative
-		if (self.debugging): self.debug.append ("file/#echo(__FILEPATH__)# -file->locking (%s,%s)- (#echo(__LINE__)#)" % ( f_mode,f_file_path ))
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file->locking (%s,%s)- (#echo(__LINE__)#)" % ( f_mode,f_file_path ))
 		f_return = False
 
 		if (len (f_file_path) < 1): f_file_path = self.resource_file_path
+		f_lock_path_os = path.normpath ("%s.lock" % f_file_path)
 
 		if ((len (f_file_path) > 0) and (self.resource != None)):
 		#
 			if ((f_mode == "w") and (self.readonly)): f_return = False
 			elif (_direct_file_locking_alternative):
 			#
-				f_locked_check = path.exists (path.normpath ("%s.lock" % f_file_path))
+				f_locked_check = path.exists (f_lock_path_os)
 
 				if (f_locked_check):
 				#
 					f_locked_check = False
 
-					if ((self.time - self.timeout_count) < path.getmtime ("%s.lock" % f_file_path)):
+					if ((self.time - self.timeout_count) < path.getmtime (f_lock_path_os)):
 					#
-						try: os.unlink ("%s.lock" % self.resource_file_path)
+						try: os.unlink (f_lock_path_os)
 						except Exception,f_unhandled_exception: pass
 					#
 					else: f_locked_check = True
@@ -391,7 +390,7 @@ Runs flock or an alternative locking mechanism.
 					#
 						try:
 						#
-							file("%s.lock" % self.resource_file_path,"a").close ()
+							file(f_lock_path_os).close ()
 							f_return = True
 						#
 						except Exception,f_unhandled_exception: pass
@@ -401,7 +400,7 @@ Runs flock or an alternative locking mechanism.
 				#
 					try:
 					#
-						os.unlink ("%s.lock" % self.resource_file_path)
+						os.unlink (f_lock_path_os)
 						f_return = True
 					#
 					except Exception,f_unhandled_exception: pass
@@ -437,7 +436,7 @@ Reads from the current file session.
 @since  v0.1.00
 		"""
 
-		if (self.debugging): self.debug.append ("file/#echo(__FILEPATH__)# -file->read (%i,%i)- (#echo(__LINE__)#)" % ( f_bytes,f_timeout ))
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file->read (%i,%i)- (#echo(__LINE__)#)" % ( f_bytes,f_timeout ))
 		f_return = False
 
 		if (self.lock ("r")):
@@ -472,7 +471,7 @@ Returns true if the file resource is available.
 @since  v0.1.00
 		"""
 
-		if (self.debugging): self.debug.append ("file/#echo(__FILEPATH__)# -file->resource_check ()- (#echo(__LINE__)#)")
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file->resource_check ()- (#echo(__LINE__)#)")
 
 		if (self.resource == None): return False
 		else: return True
@@ -488,7 +487,7 @@ Seek to a given offset.
 @since  v0.1.00
 		"""
 
-		if (self.debugging): self.debug.append ("file/#echo(__FILEPATH__)# -file->seek (%i)- (#echo(__LINE__)#)" % f_offset)
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file->seek (%i)- (#echo(__LINE__)#)" % f_offset)
 
 		if (self.resource == None): return False
 		else:
@@ -534,7 +533,7 @@ Truncates the active file session.
 @since  v0.1.00
 		"""
 
-		if (self.debugging): self.debug.append ("file/#echo(__FILEPATH__)# -file->truncate (%i)- (#echo(__LINE__)#)" % f_new_size)
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file->truncate (%i)- (#echo(__LINE__)#)" % f_new_size)
 
 		if (self.lock ("w")):
 		#
@@ -557,15 +556,16 @@ Opens a file session.
 @since  v0.1.00
 		"""
 
-		if (self.debugging): self.debug.append ("file/#echo(__FILEPATH__)# -file->open (%s,+f_readonly,%s)- (#echo(__LINE__)#)" % ( f_file_path,f_file_mode ))
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file->open (%s,+f_readonly,%s)- (#echo(__LINE__)#)" % ( f_file_path,f_file_mode ))
 
 		if (self.resource == None):
 		#
 			f_created_check = True
+			f_file_path_os = path.normpath (f_file_path)
 			if (f_readonly): self.readonly = True
 			f_return = True
 
-			if (path.exists (f_file_path)): f_created_check = False
+			if (path.exists (f_file_path_os)): f_created_check = False
 			elif (not self.readonly):
 			#
 				if (self.umask != None): os.umask (int (self.umask,8))
@@ -574,27 +574,25 @@ Opens a file session.
 
 			if (f_return):
 			#
-				try: self.resource = file (f_file_path,f_file_mode)
+				try: self.resource = file (f_file_path_os,f_file_mode)
 				except Exception,f_unhandled_exception: pass
 			#
 			else: self.trigger_error ("file/#echo(__FILEPATH__)# -file->open ()- (#echo(__LINE__)#) reporting: Failed opening %s - file does not exist" % f_file_path,self.E_NOTICE)
 
 			if (self.resource == None):
 			#
-				self.resource_file_path = ""
-
 				if (f_created_check):
 				#
-					try: os.unlink (f_file_path)
+					try: os.unlink (f_file_path_os)
 					except Exception,f_unhandled_exception: pass
 				#
 			#
 			else:
 			#
-				if ((self.chmod != None) and (f_created_check)): os.chmod (f_file_path,self.chmod)
+				if ((self.chmod != None) and (f_created_check)): os.chmod (f_file_path_os,self.chmod)
 				self.resource_file_path = f_file_path
 
-				if (self.lock ("r")): self.resource_file_size = path.getsize (self.resource_file_path)
+				if (self.lock ("r")): self.resource_file_size = path.getsize (f_file_path_os)
 				else:
 				#
 					self.close (f_created_check)
@@ -619,7 +617,7 @@ Write content to the active file session.
 @since  v0.1.00
 		"""
 
-		if (self.debugging): self.debug.append ("file/#echo(__FILEPATH__)# -file->write (+f_data,%i)- (#echo(__LINE__)#)" % f_timeout)
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file->write (+f_data,%i)- (#echo(__LINE__)#)" % f_timeout)
 		f_return = False
 
 		if (self.lock ("w")):
@@ -653,7 +651,7 @@ Write content to the active file session.
 			if (f_bytes_unwritten > 0):
 			#
 				f_return = False
-				self.resource_file_size = path.getsize (self.resource_file_path)
+				self.resource_file_size = path.getsize (path.normpath (self.resource_file_path))
 				self.trigger_error ("file/#echo(__FILEPATH__)# -file->write ()- (#echo(__LINE__)#) reporting: Timeout occured before EOF",self.E_ERROR)
 			#
 			elif (f_new_size > 0): self.resource_file_size = f_new_size

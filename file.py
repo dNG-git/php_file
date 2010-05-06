@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##j## BOF
 
-"""/*n// NOTE
+"""n// NOTE
 ----------------------------------------------------------------------------
 Extended Core: File
 Working with a file abstraction layer
@@ -18,8 +18,8 @@ http://www.direct-netware.de/redirect.php?licenses;w3c
 #echo(extCoreFileVersion)#
 extCore_file/#echo(__FILEPATH__)#
 ----------------------------------------------------------------------------
-NOTE_END //n*/"""
-"""/**
+NOTE_END //n"""
+"""*
 File functions class to use some advanced locking mechanisms.
 
 @internal   We are using epydoc (JavaDoc style) to automate the
@@ -33,7 +33,7 @@ File functions class to use some advanced locking mechanisms.
 @since      v0.1.00
 @license    http://www.direct-netware.de/redirect.php?licenses;w3c
             W3C (R) Software License
-*/"""
+"""
 
 from os import path
 import os,stat,time
@@ -43,7 +43,7 @@ try:
 	import fcntl
 	_direct_file_locking_alternative = False
 #
-except Exception,g_handled_exception: _direct_file_locking_alternative = True
+except ImportError,g_handled_exception: _direct_file_locking_alternative = True
 
 class direct_file (object):
 #
@@ -170,7 +170,9 @@ Constructor __init__ (direct_file)
 		if (f_time < 0): self.time = time.time ()
 		else: self.time = f_time
 
-		self.timeout_count = f_timeout_count
+		if (f_timeout_count == None): self.timeout_count = 5
+		else: self.timeout_count = f_timeout_count
+
 		self.umask = f_umask
 	#
 
@@ -231,7 +233,7 @@ Closes an active file session.
 
 				if (path.exists (f_lock_path_os)):
 				#
-					try: os.unlink (f_lock_pat_os)
+					try: os.unlink (f_lock_path_os)
 					except Exception,f_unhandled_exception: pass
 				#
 			#
@@ -390,7 +392,7 @@ Runs flock or an alternative locking mechanism.
 					#
 						try:
 						#
-							file(f_lock_path_os).close ()
+							file(f_lock_path_os,"w").close ()
 							f_return = True
 						#
 						except Exception,f_unhandled_exception: pass

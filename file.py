@@ -564,8 +564,10 @@ Opens a file session.
 		#
 			f_created_check = True
 			f_file_path_os = path.normpath (f_file_path)
-			if (f_readonly): self.readonly = True
 			f_return = True
+
+			if (f_readonly): self.readonly = True
+			else: self.readonly = False
 
 			if (path.exists (f_file_path_os)): f_created_check = False
 			elif (not self.readonly):

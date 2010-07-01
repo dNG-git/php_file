@@ -466,8 +466,8 @@ want to delete unneeded files.
 		else
 		{
 			$f_created_check = true;
-			if ($f_readonly) { $this->readonly = true; }
 			$f_return = true;
+			$this->readonly = ($f_readonly ? true : false);
 
 			if (file_exists ($f_file_path)) { $f_created_check = false; }
 			elseif (!$this->readonly)

@@ -1,8 +1,4 @@
 _extras
 .*
-*.jproj
-*.mdproj
-*.mdw
-*.pidb
-*.sln
-*.userprefs
+ext_core_file.*
+nbproject

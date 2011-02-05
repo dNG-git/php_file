@@ -52,8 +52,7 @@ if (!defined ("CLASS_direct_file"))
 {
 //c// direct_file
 /**
-* Currently we have only really basic functions - now we want to introduce
-* some more.
+* Get file objects to work with files easily.
 *
 * @author     direct Netware Group
 * @copyright  (C) direct Netware Group - All rights reserved
@@ -87,9 +86,9 @@ class direct_file
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $resource;
 /**
-	* @var string $resource_file_path Filename for the resource pointer
+	* @var string $resource_file_pathname Filename for the resource pointer
 */
-	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $resource_file_path;
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $resource_file_pathname;
 /**
 	* @var string $resource_lock Current locking mode
 */
@@ -130,7 +129,7 @@ Construct the class using old and new behavior
 		$this->chmod = $f_chmod;
 		$this->readonly = false;
 		$this->resource = NULL;
-		$this->resource_file_path = "";
+		$this->resource_file_pathname = "";
 		$this->resource_lock = "r";
 		$this->time = (($f_time < 0) ? time () : $f_time);
 		$this->timeout_count = $f_timeout_count;
@@ -191,18 +190,18 @@ Construct the class using old and new behavior
 
 			if (($this->resource_lock == "w")&&(USE_file_locking_alternative))
 			{
-				if (file_exists ($this->resource_file_path.".lock")) { @unlink ($this->resource_file_path.".lock"); }
+				if (file_exists ($this->resource_file_pathname.".lock")) { @unlink ($this->resource_file_pathname.".lock"); }
 			}
 
 			if ((!$this->readonly)&&($f_delete_empty)&&(!$f_file_position))
 			{
 				$f_return = false;
-				if (is_writable ($this->resource_file_path)) { $f_return = @unlink ($this->resource_file_path); }
+				if (is_writable ($this->resource_file_pathname)) { $f_return = @unlink ($this->resource_file_pathname); }
 			}
 
 			$this->readonly = false;
 			$this->resource = NULL;
-			$this->resource_file_path = "";
+			$this->resource_file_pathname = "";
 		}
 
 		return $f_return;
@@ -244,7 +243,7 @@ Construct the class using old and new behavior
 /**
 	* Returns the current offset.
 	*
-	* @return boolean True on success
+	* @return mixed Offset on success; false on error
 	* @since  v0.1.00
 */
 	/*#ifndef(PHP4) */public /* #*/function get_position ()
@@ -301,26 +300,26 @@ Construct the class using old and new behavior
 		return $f_return;
 	}
 
-	//f// direct_file->locking ($f_mode,$f_file_path = "")
+	//f// direct_file->locking ($f_mode,$f_file_pathname = "")
 /**
 	* Runs flock or an alternative locking mechanism.
 	*
 	* @param  string $f_mode The requested file locking mode ("r" or "w").
-	* @param  string $f_file_path Alternative path to the locking file (used for
-	*         USE_file_locking_alternative)
+	* @param  string $f_file_pathname Alternative path to the locking file (used
+	*         for USE_file_locking_alternative)
 	* @uses   direct_basic_functions::set_debug_result()
 	* @uses   USE_file_locking_alternative
 	* @return boolean True on success
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */protected /* #*/function locking ($f_mode,$f_file_path = "")
+	/*#ifndef(PHP4) */protected /* #*/function locking ($f_mode,$f_file_pathname = "")
 	{
-		if ($this->debugging) { $this->debug[] = "file/#echo(__FILEPATH__)# -file->locking ($f_mode,$f_file_path)- (#echo(__LINE__)#)"; }
+		if ($this->debugging) { $this->debug[] = "file/#echo(__FILEPATH__)# -file->locking ($f_mode,$f_file_pathname)- (#echo(__LINE__)#)"; }
 
 		$f_return = false;
-		if (!strlen ($f_file_path)) { $f_file_path = $this->resource_file_path; }
+		if (!strlen ($f_file_pathname)) { $f_file_pathname = $this->resource_file_pathname; }
 
-		if ((strlen ($f_file_path))&&(is_resource ($this->resource)))
+		if ((strlen ($f_file_pathname))&&(is_resource ($this->resource)))
 		{
 			if (($f_mode == "w")&&($this->readonly)) { $f_return = false; }
 			elseif (USE_file_locking_alternative)
@@ -331,16 +330,16 @@ want to delete unneeded files.
 ------------------------------------------------------------------------- */
 
 				clearstatcache ();
-				$f_locked_check = file_exists ($f_file_path.".lock");
+				$f_locked_check = file_exists ($f_file_pathname.".lock");
 
 				if ($f_locked_check)
 				{
 					$f_locked_check = false;
-					$f_locked_mtime = filemtime ($f_file_path.".lock");
+					$f_locked_mtime = filemtime ($f_file_pathname.".lock");
 
 					if ($f_locked_mtime)
 					{
-						if (($this->time - $this->timeout_count) < $f_locked_mtime) { @unlink ($f_file_path.".lock"); }
+						if (($this->time - $this->timeout_count) < $f_locked_mtime) { @unlink ($f_file_pathname.".lock"); }
 						else { $f_locked_check = true; }
 					}
 				}
@@ -348,9 +347,9 @@ want to delete unneeded files.
 				if ($f_mode == "w")
 				{
 					if (($f_locked_check)&&($this->resource_lock == "w")) { $f_return = true; }
-					elseif (!$f_locked_check) { $f_return = @touch ($f_file_path.".lock"); }
+					elseif (!$f_locked_check) { $f_return = @touch ($f_file_pathname.".lock"); }
 				}
-				elseif (($f_locked_check)&&($this->resource_lock == "w")) { $f_return = @unlink ($f_file_path.".lock"); }
+				elseif (($f_locked_check)&&($this->resource_lock == "w")) { $f_return = @unlink ($f_file_pathname.".lock"); }
 				elseif (!$f_locked_check) { $f_return = true; }
 			}
 			else { $f_return = (($f_mode == "w") ? @flock ($this->resource,LOCK_EX) : @flock ($this->resource,LOCK_SH)); }
@@ -368,7 +367,7 @@ want to delete unneeded files.
 	* @param  integer $f_timeout Timeout to use (defaults to construction time
 	*         value)
 	* @uses   direct_file::lock()
-	* @return boolean True on success
+	* @return mixed Data on success; false on error
 	* @since  v0.1.00
 */
 	/*#ifndef(PHP4) */public /* #*/function read ($f_bytes = 0,$f_timeout = -1)
@@ -447,20 +446,20 @@ want to delete unneeded files.
 		else { return false; }
 	}
 
-	//f// direct_file->open ($f_file_path,$f_readonly = false,$f_file_mode = "a+b")
+	//f// direct_file->open ($f_file_pathname,$f_readonly = false,$f_file_mode = "a+b")
 /**
 	* Opens a file session.
 	*
-	* @param  string $f_file_path Path to the requested file
+	* @param  string $f_file_pathname Path to the requested file
 	* @param  boolean $f_readonly Open file in readonly mode
 	* @param  string $f_file_mode Filemode to use
 	* @uses   direct_file::locking()
 	* @return boolean True on success
 	* @since  v0.1.00
 */
-	/*#ifndef(PHP4) */public /* #*/function open ($f_file_path,$f_readonly = false,$f_file_mode = "a+b")
+	/*#ifndef(PHP4) */public /* #*/function open ($f_file_pathname,$f_readonly = false,$f_file_mode = "a+b")
 	{
-		if ($this->debugging) { $this->debug[] = "file/#echo(__FILEPATH__)# -file->open ($f_file_path,+f_readonly,$f_file_mode)- (#echo(__LINE__)#)"; }
+		if ($this->debugging) { $this->debug[] = "file/#echo(__FILEPATH__)# -file->open ($f_file_pathname,+f_readonly,$f_file_mode)- (#echo(__LINE__)#)"; }
 
 		if (is_resource ($this->resource)) { $f_return = false; }
 		else
@@ -469,20 +468,20 @@ want to delete unneeded files.
 			$f_return = true;
 			$this->readonly = ($f_readonly ? true : false);
 
-			if (file_exists ($f_file_path)) { $f_created_check = false; }
+			if (file_exists ($f_file_pathname)) { $f_created_check = false; }
 			elseif (!$this->readonly)
 			{
 				if ($this->umask != NULL) { umask (intval ($this->umask,8)); }
 			}
 			else { $f_return = false; }
 
-			if ($f_return) { $this->resource = @fopen ($f_file_path,$f_file_mode); }
-			else { trigger_error ("file/#echo(__FILEPATH__)# -file->open ()- (#echo(__LINE__)#) reporting: Failed opening $f_file_path - file does not exist",E_USER_NOTICE); }
+			if ($f_return) { $this->resource = @fopen ($f_file_pathname,$f_file_mode); }
+			else { trigger_error ("file/#echo(__FILEPATH__)# -file->open ()- (#echo(__LINE__)#) reporting: Failed opening $f_file_pathname - file does not exist",E_USER_NOTICE); }
 
 			if (is_resource ($this->resource))
 			{
-				if (($this->chmod != NULL)&&($f_created_check)) { chmod ($f_file_path,(intval ($this->chmod,8))); }
-				$this->resource_file_path = $f_file_path;
+				if (($this->chmod != NULL)&&($f_created_check)) { chmod ($f_file_pathname,(intval ($this->chmod,8))); }
+				$this->resource_file_pathname = $f_file_pathname;
 				@stream_set_timeout ($this->resource,$this->timeout_count);
 
 				if (!$this->lock ("r"))
@@ -493,8 +492,8 @@ want to delete unneeded files.
 			}
 			else
 			{
-				$this->resource_file_path = "";
-				if ($f_created_check) { @unlink ($f_file_path); }
+				$this->resource_file_pathname = "";
+				if ($f_created_check) { @unlink ($f_file_pathname); }
 			}
 		}
 

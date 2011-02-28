@@ -213,7 +213,7 @@ Closes an active file session.
 		"""
 
 		global _direct_file_locking_alternative
-		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file.close (delete_emtpy)- (#echo(__LINE__)#)")
+		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file.close (delete_empty)- (#echo(__LINE__)#)")
 		f_return = False
 
 		if (self.resource != None):
@@ -446,13 +446,21 @@ Reads from the current file session.
 @since  v0.1.00
 		"""
 
+		global _unicode_object
 		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file.read ({0:d},{1:d})- (#echo(__LINE__)#)".format (bytes,timeout))
+
 		f_return = False
 
 		if (self.lock ("r")):
 		#
 			f_bytes_unread = bytes
-			f_return = ""
+
+			try:
+			#
+				if (bytes == _unicode_object['type']): f_return = bytes ()
+				else: f_return = ""
+			#
+			except: f_return = ""
 
 			if (timeout < 0): f_timeout_time = self.time + self.timeout_count
 			else: f_timeout_time = self.time + timeout
@@ -466,7 +474,7 @@ Reads from the current file session.
 				if (bytes > 0): f_bytes_unread -= f_part_size
 			#
 
-			if ((f_bytes_unread > 0) or ((bytes == 0) and (self.eof_check ()))): self.trigger_error ("file/#echo(__FILEPATH__)# -file.lock ()- (#echo(__LINE__)#) reporting: Timeout occured before EOF",self.E_ERROR)
+			if ((f_bytes_unread > 0) or ((bytes == 0) and (self.eof_check ()))): self.trigger_error ("file/#echo(__FILEPATH__)# -file.read ()- (#echo(__LINE__)#) reporting: Timeout occured before EOF",self.E_ERROR)
 		#
 
 		return f_return

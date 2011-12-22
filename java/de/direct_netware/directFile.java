@@ -33,6 +33,8 @@ NOTE_END //n*/
 *             W3C (R) Software License
 */
 
+package de.direct_netware;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -43,12 +45,11 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Vector;
 
-//c// directFile
 /**
 * Get file objects to work with files easily.
 *
@@ -82,7 +83,7 @@ public class directFile
 /**
 	* Debug message container
 */
-	public Vector Debug;
+	public ArrayList Debug;
 /**
 	* Function to be called for logging exceptions and other errors
 */
@@ -124,7 +125,6 @@ public class directFile
 Construct the class
 ------------------------------------------------------------------------- */
 
-	//f// directFile.directFile ()
 /**
 	* Constructor directFile (-1,-1,-1,5,false)
 	*
@@ -177,17 +177,16 @@ Construct the class
 */
 	public directFile (int fUmask,int fChmod,int fTime,int fTimeoutCount,boolean fDebug)
 	{
-		if (fDebug) { Debug = new Vector (Collections.singleton ("file.directFile (new)")); }
+		if (fDebug) { Debug = new ArrayList (Collections.singleton ("file.directFile (new)")); }
 
 		Chmod = fChmod;
 		Readonly = false;
 		ResourceFilePathname = "";
-		Time = ((fTime < 0) ? new Date () : new Date (fTime * 1000));
+		Time = ((fTime < 0) ? null : new Date (fTime * 1000));
 		TimeoutCount = fTimeoutCount;
 		Umask = fUmask;
 	}
 
-	//f// directFile.finalize ()
 /**
 	* Destructor directFile ().
 	*
@@ -195,7 +194,6 @@ Construct the class
 */
 	public void finalize () { close (true); }
 
-	//f// directFile.close (boolean fDeleteEmpty = true)
 /**
 	* Closes an active file session.
 	*
@@ -241,7 +239,6 @@ Construct the class
 		return fReturn;
 	}
 
-	//f// directFile.eofCheck ()
 /**
 	* Checks if the pointer is at EOF.
 	*
@@ -267,7 +264,6 @@ Construct the class
 		return fReturn;
 	}
 
-	//f// directFile.getFileHandle ()
 /**
 	* Returns the file object.
 	*
@@ -282,7 +278,6 @@ Construct the class
 		else { return null; }
 	}
 
-	//f// directFile.getHandle ()
 /**
 	* Returns the resource to the opened file.
 	*
@@ -297,7 +292,6 @@ Construct the class
 		else { return null; }
 	}
 
-	//f// directFile.getPosition ()
 /**
 	* Returns the current offset.
 	*
@@ -318,7 +312,6 @@ Construct the class
 		return fReturn;
 	}
 
-	//f// directFile.lock (char fMode)
 /**
 	* Changes file locking if needed.
 	*
@@ -374,7 +367,6 @@ Construct the class
 		return fReturn;
 	}
 
-	//f// directFile.read (int fBytes = 0,int fTimeout = -1)
 /**
 	* Reads from the current file session.
 	*
@@ -423,8 +415,8 @@ Construct the class
 			FileChannel fFileChannel = Resource.getChannel ();
 			ByteBuffer fPartBytes = null;
 			int fPartBytesRead = 0;
-			if (fTimeout < 0) { fTimeout = TimeoutCount;  }
-			Date fTimeoutTime = new Date (Time.getTime () + (fTimeout * 1000));
+			if (fTimeout < 0) { fTimeout = TimeoutCount; }
+			Date fTimeoutTime = ((Time == null) ? new Date (new Date().getTime () + (fTimeout * 1000)) : new Date (Time.getTime () + (fTimeout * 1000)));
 
 			do
 			{
@@ -454,7 +446,6 @@ Construct the class
 		return fReturn;
 	}
 
-	//f// directFile.resourceCheck ()
 /**
 	* Returns true if the file resource is available.
 	*
@@ -469,7 +460,6 @@ Construct the class
 		else { return false; }
 	}
 
-	//f// directFile.seek (int fOffset)
 /**
 	* Seek to a given offset.
 	*
@@ -495,7 +485,6 @@ Construct the class
 		return fReturn;
 	}
 
-	//f// directFile.truncate (int fNewSize)
 /**
 	* Truncates the active file session.
 	*
@@ -521,7 +510,6 @@ Construct the class
 		return fReturn;
 	}
 
-	//f// directFile.open (String fFilePathname/URL fFileURL,boolean fReadonly = false,String fFileMode = "rw+")
 /**
 	* Opens a file session.
 	*
@@ -552,7 +540,7 @@ Construct the class
 	{
 		boolean fReturn = false;
 
-		try { fReturn = open ((new URL ("file://" + fFilePathname)),fReadonly,fFileMode); }
+		try { fReturn = (fFilePathname.startsWith ("file:") ? open ((new URL (fFilePathname)),fReadonly,fFileMode) : open ((new URL ("file:" + fFilePathname)),fReadonly,fFileMode)); }
 		catch (Throwable fUnhandledException) { }
 
 		return fReturn;
@@ -675,7 +663,6 @@ Construct the class
 		return fReturn;
 	}
 
-	//f// directFile.retrieveRemoteFile (URL fFileURL)
 /**
 	* Retrieve a remote file saving it temporarily until the application is
 	* closed.
@@ -735,7 +722,6 @@ Construct the class
 		return fReturn;
 	}
 
-	//f// directFile.setTrigger (directFileErrorRunnable fRunnable = null)
 /**
 	* Set a given function to be called for each exception or error.
 	*
@@ -750,7 +736,6 @@ Construct the class
 */
 	public void setTrigger (directFileErrorRunnable fRunnable) { errorCallback = fRunnable; }
 
-	//f// directFile.triggerError (String message,int messageType = -1)
 /**
 	* Calls a user-defined function for each exception or error.
 	*
@@ -776,7 +761,6 @@ Construct the class
 		}
 	}
 
-	//f// directFile.write (byte[] fData,int fTimeout = -1)
 /**
 	* Write content to the active file session.
 	*
@@ -808,7 +792,7 @@ Construct the class
 			int fPartBytes = 0;
 			fReturn = true;
 			if (fTimeout < 0) { fTimeout = TimeoutCount;  }
-			Date fTimeoutTime = new Date (Time.getTime () + (fTimeout * 1000));
+			Date fTimeoutTime = ((Time == null) ? new Date (new Date().getTime () + (fTimeout * 1000)) : new Date (Time.getTime () + (fTimeout * 1000)));
 
 			do
 			{
@@ -830,7 +814,6 @@ Construct the class
 		return fReturn;
 	}
 
-	//i// directFile.directFileErrorRunnable
 /**
 	* Error callback interface.
 	*
@@ -844,7 +827,6 @@ Construct the class
 */
 	public interface directFileErrorRunnable extends Runnable
 	{
-		//f// directFileErrorRunnable.setError (String message,int messageType)
 /**
 		* "setError ()" is called with the error message and type before the callback
 		* "run ()" method is called.

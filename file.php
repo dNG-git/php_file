@@ -50,7 +50,6 @@ Testing for required classes
 
 if (!defined ("CLASS_direct_file"))
 {
-//c// direct_file
 /**
 * Get file objects to work with files easily.
 *
@@ -110,7 +109,6 @@ class direct_file
 Construct the class using old and new behavior
 ------------------------------------------------------------------------- */
 
-	//f// direct_file->__construct () and direct_file->direct_file ()
 /**
 	* Constructor (PHP5+) __construct (direct_file)
 	*
@@ -148,7 +146,6 @@ Construct the class using old and new behavior
 *\/
 	function direct_file ($f_umask = NULL,$f_chmod = NULL,$f_time = -1,$f_timeout_count = 5,$f_debug = false) { $this->__construct ($f_umask,$f_chmod,$f_time,$f_timeout_count,$f_debug); }
 :#\n*/
-	//f// direct_file->__destruct ()
 /**
 	* Destructor (PHP5+) __destruct (direct_file)
 	*
@@ -160,7 +157,6 @@ Construct the class using old and new behavior
 		$this->resource = NULL;
 	}
 
-	//f// direct_file->close ($f_delete_empty = true)
 /**
 	* Closes an active file session.
 	*
@@ -207,7 +203,6 @@ Construct the class using old and new behavior
 		return $f_return;
 	}
 
-	//f// direct_file->eof_check ()
 /**
 	* Checks if the pointer is at EOF.
 	*
@@ -222,7 +217,6 @@ Construct the class using old and new behavior
 		else { return true; }
 	}
 
-	//f// direct_file->get_handle ()
 /**
 	* Returns the file pointer.
 	*
@@ -239,7 +233,6 @@ Construct the class using old and new behavior
 		return $f_return;
 	}
 
-	//f// direct_file->get_position ()
 /**
 	* Returns the current offset.
 	*
@@ -254,7 +247,6 @@ Construct the class using old and new behavior
 		else { return false; }
 	}
 
-	//f// direct_file->lock ($f_mode)
 /**
 	* Changes file locking if needed.
 	*
@@ -300,7 +292,6 @@ Construct the class using old and new behavior
 		return $f_return;
 	}
 
-	//f// direct_file->locking ($f_mode,$f_file_pathname = "")
 /**
 	* Runs flock or an alternative locking mechanism.
 	*
@@ -358,7 +349,6 @@ want to delete unneeded files.
 		return $f_return;
 	}
 
-	//f// direct_file->read ($f_bytes = 0,$f_timeout = -1)
 /**
 	* Reads from the current file session.
 	*
@@ -399,7 +389,6 @@ want to delete unneeded files.
 		return $f_return;
 	}
 
-	//f// direct_file->resource_check ()
 /**
 	* Returns true if the file resource is available.
 	*
@@ -414,7 +403,6 @@ want to delete unneeded files.
 		else { return false; }
 	}
 
-	//f// direct_file->seek ($f_offset)
 /**
 	* Seek to a given offset.
 	*
@@ -430,7 +418,6 @@ want to delete unneeded files.
 		else { return false; }
 	}
 
-	//f// direct_file->truncate ($f_new_size)
 /**
 	* Truncates the active file session.
 	*
@@ -446,7 +433,6 @@ want to delete unneeded files.
 		else { return false; }
 	}
 
-	//f// direct_file->open ($f_file_pathname,$f_readonly = false,$f_file_mode = "a+b")
 /**
 	* Opens a file session.
 	*
@@ -500,7 +486,6 @@ want to delete unneeded files.
 		return $f_return;
 	}
 
-	//f// direct_file->write ($f_data,$f_timeout = -1)
 /**
 	* Write content to the active file session.
 	*

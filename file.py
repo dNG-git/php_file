@@ -169,7 +169,7 @@ Constructor __init__ (direct_file)
 		self.resource_file_size = -1
 		self.resource_lock = "r"
 
-		if (current_time < 0): self.time = time.time ()
+		if (current_time < 0): self.time = -1
 		else: self.time = current_time
 
 		if (timeout_count == None): self.timeout_count = 5
@@ -385,7 +385,7 @@ Runs flock or an alternative locking mechanism.
 				#
 					f_locked_check = False
 
-					if ((self.time - self.timeout_count) < path.getmtime (f_lock_pathname_os)):
+					if (((self.time < 0) and ((time.time () - self.timeout_count) < (path.getmtime (f_lock_pathname_os)))) or ((self.time - self.timeout_count) < path.getmtime (f_lock_pathname_os))):
 					#
 						try: os.unlink (f_lock_pathname_os)
 						except: pass
@@ -462,8 +462,11 @@ Reads from the current file session.
 			#
 			except: f_return = ""
 
-			if (timeout < 0): f_timeout_time = self.time + self.timeout_count
-			else: f_timeout_time = self.time + timeout
+			if (self.time < 0): f_timeout_time = time.time ()
+			else: f_timeout_time = self.time
+
+			if (timeout < 0): f_timeout_time += self.timeout_count
+			else: f_timeout_time += timeout
 
 			while (((f_bytes_unread > 0) or (bytes == 0)) and (not self.eof_check ()) and (f_timeout_time > (time.time ()))):
 			#
@@ -654,8 +657,11 @@ Write content to the active file session.
 			f_bytes_written = 0
 			f_return = True
 
-			if (timeout < 0): f_timeout_time = self.time + self.timeout_count
-			else: f_timeout_time = self.time + timeout
+			if (self.time < 0): f_timeout_time = time.time ()
+			else: f_timeout_time = self.time
+
+			if (timeout < 0): f_timeout_time += self.timeout_count
+			else: f_timeout_time += timeout
 
 			while ((f_return) and (f_bytes_unwritten > 0) and (f_timeout_time > (time.time ()))):
 			#

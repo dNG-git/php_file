@@ -75,6 +75,10 @@ Warning type: Could create trouble if ignored
 Error type: An error occured and was handled
 	"""
 
+	binary = False
+	"""
+Binary file flag
+	"""
 	chmod = None
 	"""
 chmod to set when creating a new file
@@ -457,7 +461,7 @@ Reads from the current file session.
 
 			try:
 			#
-				if (bytes == _unicode_object['type']): f_return = bytes ()
+				if (self.binary): f_return = _unicode_object['type'] ()
 				else: f_return = ""
 			#
 			except: f_return = ""
@@ -616,6 +620,9 @@ Opens a file session.
 			#
 			else:
 			#
+				if ((bytes != _unicode_object['type']) or (file_mode.find ("b") < 0)): self.binary = False
+				else: self.binary = True
+
 				if ((self.chmod != None) and (f_created_check)): os.chmod (f_file_pathname_os,self.chmod)
 				self.resource_file_pathname = file_pathname
 

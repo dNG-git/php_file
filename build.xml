@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Extended Core: File
+Working with a file abstraction layer
+
+(C) direct Netware Group - All rights reserved
+http://www.direct-netware.de/redirect.php?ext_core_file
+
+This work is distributed under the W3C (R) Software License, but without any
+warranty; without even the implied warranty of merchantability or fitness
+for a particular purpose.
+
+http://www.direct-netware.de/redirect.php?licenses;w3c
+// -->
+<project name="extCore_file">
+	<dirname property="extCore.basedir" file="${ant.file}" />
+	<property file="${extCore.basedir}/_extras/build.properties" />
+
+	<target name="compile.pyBuilder" description="Compile module ${ant.project.name}">
+		<exec executable="python" dir="${extCore.basedir}">
+			<arg file="${pyBuilder.filePathName}" />
+			<arg value="--filetype=${pyBuilder.fileTypes}" />
+			<arg value="--include=${extCore.basedir}/python/" />
+			<arg value="--output_path=${pyBuilder.target}" />
+			<arg value="--strip_prefix=${extCore.basedir}/python/" />
+		</exec>
+	</target>
+
+	<target name="cleanup.pyBuilder.target" description="Clean target directory of ${ant.project.name}">
+		<delete includeEmptyDirs="true"><fileset dir="${pyBuilder.target}" /></delete>
+	</target>
+</project>

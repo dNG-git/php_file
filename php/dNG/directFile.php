@@ -9,11 +9,11 @@ Working with a file abstraction layer
 (C) direct Netware Group - All rights reserved
 http://www.direct-netware.de/redirect.php?ext_core_file
 
-This work is distributed under the W3C (R) Software License, but without any
-warranty; without even the implied warranty of merchantability or fitness
-for a particular purpose.
+This Source Code Form is subject to the terms of the Mozilla Public License,
+v. 2.0. If a copy of the MPL was not distributed with this file, You can
+obtain one at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------------------------
-http://www.direct-netware.de/redirect.php?licenses;w3c
+http://www.direct-netware.de/redirect.php?licenses;mpl2
 ----------------------------------------------------------------------------
 #echo(extCoreFileVersion)#
 extCore_file/#echo(__FILEPATH__)#
@@ -33,8 +33,8 @@ NOTE_END //n*/
 * @package    ext_core
 * @subpackage file
 * @since      v0.1.00
-* @license    http://www.direct-netware.de/redirect.php?licenses;w3c
-*             W3C (R) Software License
+* @license    http://www.direct-netware.de/redirect.php?licenses;mpl2
+*             Mozilla Public License, v. 2.0
 */
 /*#ifdef(PHP5n) */
 
@@ -58,8 +58,8 @@ if (!defined ("CLASS_directFile"))
 * @package    ext_core
 * @subpackage file
 * @since      v0.1.00
-* @license    http://www.direct-netware.de/redirect.php?licenses;w3c
-*             W3C (R) Software License
+* @license    http://www.direct-netware.de/redirect.php?licenses;mpl2
+*             Mozilla Public License, v. 2.0
 */
 class directFile
 {

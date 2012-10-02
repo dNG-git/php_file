@@ -3,18 +3,6 @@
 
 """
 File functions class to use some advanced locking mechanisms.
-
-@internal   We are using epydoc (JavaDoc style) to automate the
-            documentation process for creating the Developer's Manual.
-            Use the following line to ensure 76 character sizes:
-----------------------------------------------------------------------------
-@author     direct Netware Group
-@copyright  (C) direct Netware Group - All rights reserved
-@package    ext_core
-@subpackage file
-@since      v0.1.00
-@license    http://www.direct-netware.de/redirect.php?licenses;mpl2
-            Mozilla Public License, v. 2.0
 """
 """n// NOTE
 ----------------------------------------------------------------------------
@@ -53,13 +41,13 @@ class direct_file (object):
 	"""
 Get file objects to work with files easily.
 
-@author     direct Netware Group
-@copyright  (C) direct Netware Group - All rights reserved
-@package    ext_core
-@subpackage file
-@since      v1.0.0
-@license    http://www.direct-netware.de/redirect.php?licenses;mpl2
-            Mozilla Public License, v. 2.0
+:author:     direct Netware Group
+:copyright:  direct Netware Group - All rights reserved
+:package:    ext_core
+:subpackage: file
+:since:      v0.1.00
+:license:    http://www.direct-netware.de/redirect.php?licenses;mpl2
+             Mozilla Public License, v. 2.0
 	"""
 
 	E_NOTICE = 1
@@ -135,12 +123,13 @@ Construct the class
 		"""
 Constructor __init__ (direct_file)
 
-@param default_umask umask to set before creating a new file
-@param default_chmod chmod to set when creating a new file
-@param current_time Current UNIX timestamp
-@param timeout_count Retries before timing out
-@param debug Debug flag
-@since v0.1.00
+:param default_umask: umask to set before creating a new file
+:param default_chmod: chmod to set when creating a new file
+:param current_time: Current UNIX timestamp
+:param timeout_count: Retries before timing out
+:param debug: Debug flag
+
+:since: v0.1.00
 		"""
 
 		if (debug): self.debug = [ "file/#echo(__FILEPATH__)# -file.__init__ (direct_file)- (#echo(__LINE__)#)" ]
@@ -187,7 +176,7 @@ Constructor __init__ (direct_file)
 		"""
 Destructor __del__ (direct_file)
 
-@since v0.1.00
+:since: v0.1.00
 		"""
 
 		self.del_direct_file ()
@@ -198,7 +187,7 @@ Destructor __del__ (direct_file)
 		"""
 Destructor del_direct_file (direct_file)
 
-@since v0.1.00
+:since: v0.1.00
 		"""
 
 		self.close ()
@@ -210,10 +199,11 @@ Destructor del_direct_file (direct_file)
 		"""
 Closes an active file session.
 
-@param  delete_empty If the file handle is valid, the file is empty and
-        this parameter is true then the file will be deleted.
-@return (bool) True on success
-@since  v0.1.00
+:param delete_empty: If the file handle is valid, the file is empty and
+                     this parameter is true then the file will be deleted.
+
+:return: (bool) True on success
+:since: v0.1.00
 		"""
 
 		global _direct_file_locking_alternative
@@ -267,8 +257,8 @@ Closes an active file session.
 		"""
 Checks if the pointer is at EOF.
 
-@return (bool) True on success
-@since  v0.1.00
+:return: (bool) True on success
+:since:  v0.1.00
 		"""
 
 		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file.eof_check ()- (#echo(__LINE__)#)")
@@ -282,8 +272,8 @@ Checks if the pointer is at EOF.
 		"""
 Returns the file pointer.
 
-@return (mixed) File handle on success; false on error
-@since  v0.1.00
+:return: (mixed) File handle on success; false on error
+:since:  v0.1.00
 		"""
 
 		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file.get_handle ()- (#echo(__LINE__)#)")
@@ -297,8 +287,8 @@ Returns the file pointer.
 		"""
 Returns the current offset.
 
-@return (mixed) Offset on success; false on error
-@since  v0.1.00
+:return: (mixed) Offset on success; false on error
+:since:  v0.1.00
 		"""
 
 		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file.get_position ()- (#echo(__LINE__)#)")
@@ -312,9 +302,10 @@ Returns the current offset.
 		"""
 Changes file locking if needed.
 
-@param  lock_mode The requested file locking mode ("r" or "w").
-@return (bool) True on success
-@since  v0.1.00
+:param lock_mode: The requested file locking mode ("r" or "w").
+
+:return: (bool) True on success
+:since: v0.1.00
 		"""
 
 		global _unicode_object
@@ -361,11 +352,12 @@ Changes file locking if needed.
 		"""
 Runs flock or an alternative locking mechanism.
 
-@param  lock_mode The requested file locking mode ("r" or "w").
-@param  file_pathname Alternative path to the locking file (used for
-        _direct_file_locking_alternative)
-@return (bool) True on success
-@since  v0.1.00
+:param lock_mode: The requested file locking mode ("r" or "w").
+:param file_pathname: Alternative path to the locking file (used for
+                      _direct_file_locking_alternative)
+
+:return: (bool) True on success
+:since:  v0.1.00
 		"""
 
 		global _direct_file_locking_alternative,_unicode_object
@@ -443,11 +435,12 @@ Runs flock or an alternative locking mechanism.
 		"""
 Reads from the current file session.
 
-@param  bytes How many bytes to read from the current position (0 means until
-        EOF)
-@param  timeout Timeout to use (defaults to construction time value)
-@return (mixed) Data on success; false on error
-@since  v0.1.00
+:param bytes: How many bytes to read from the current position (0 means
+              until EOF)
+:param timeout: Timeout to use (defaults to construction time value)
+
+:return: (mixed) Data on success; false on error
+:since:  v0.1.00
 		"""
 
 		global _unicode_object
@@ -492,8 +485,8 @@ Reads from the current file session.
 		"""
 Returns true if the file resource is available.
 
-@return (bool) True on success
-@since  v0.1.00
+:return: (bool) True on success
+:since:  v0.1.00
 		"""
 
 		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file.resource_check ()- (#echo(__LINE__)#)")
@@ -507,9 +500,10 @@ Returns true if the file resource is available.
 		"""
 Seek to a given offset.
 
-@param  offset Seek to the given offset
-@return (bool) True on success
-@since  v0.1.00
+:param offset: Seek to the given offset
+
+:return: (bool) True on success
+:since:  v0.1.00
 		"""
 
 		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file.seek ({0:d})- (#echo(__LINE__)#)".format (offset))
@@ -527,8 +521,9 @@ Seek to a given offset.
 		"""
 Set a given function to be called for each exception or error.
 
-@param py_function Python function to be called
-@since v0.1.00
+:param py_function: Python function to be called
+
+:since: v0.1.00
 		"""
 
 		self.error_callback = py_function
@@ -539,9 +534,10 @@ Set a given function to be called for each exception or error.
 		"""
 Calls a user-defined function for each exception or error.
 
-@param message Error message
-@param message_type Error type
-@since v0.1.00
+:param message: Error message
+:param message_type: Error type
+
+:since: v0.1.00
 		"""
 
 		if (message_type == None): message_type = self.E_NOTICE
@@ -553,9 +549,10 @@ Calls a user-defined function for each exception or error.
 		"""
 Truncates the active file session.
 
-@param  new_size Cut file at the given byte position
-@return (bool) True on success
-@since  v0.1.00
+:param new_size: Cut file at the given byte position
+
+:return: (bool) True on success
+:since:  v0.1.00
 		"""
 
 		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file.truncate ({0:d})- (#echo(__LINE__)#)".format (new_size))
@@ -574,11 +571,12 @@ Truncates the active file session.
 		"""
 Opens a file session.
 
-@param  file_pathname Path to the requested file
-@param  readonly Open file in readonly mode
-@param  file_mode Filemode to use
-@return (bool) True on success
-@since  v0.1.00
+:param file_pathname: Path to the requested file
+:param readonly: Open file in readonly mode
+:param file_mode: Filemode to use
+
+:return: (bool) True on success
+:since:  v0.1.00
 		"""
 
 		global _unicode_object
@@ -644,10 +642,11 @@ Opens a file session.
 		"""
 Write content to the active file session.
 
-@param  data (Over)write file with the data content at the current position
-@param  timeout Timeout to use (defaults to construction time value)
-@return (bool) True on success
-@since  v0.1.00
+:param data: (Over)write file with the data content at the current position
+:param timeout: Timeout to use (defaults to construction time value)
+
+:return: (bool) True on success
+:since:  v0.1.00
 		"""
 
 		if (self.debug != None): self.debug.append ("file/#echo(__FILEPATH__)# -file.write (data,{0:d})- (#echo(__LINE__)#)".format (timeout))

@@ -535,4 +535,3 @@ if (!defined ("USE_file_locking_alternative")) { define ("USE_file_locking_alter
 }
 
 //j// EOF
-?>

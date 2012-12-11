@@ -1,9 +1,9 @@
 ----------------------------------------------------------------------------
-Extended Core: File
+file.php
 Working with a file abstraction layer
 ----------------------------------------------------------------------------
 The following agreement is valid for all files and subdirectories of
-ext/core/file (git)
+php/file (git)
 ----------------------------------------------------------------------------
 
 Fiduciary Licence Agreement

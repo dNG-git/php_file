@@ -2,7 +2,7 @@
 # Working with a file abstraction layer
 
 # Source file or directory to parse
-#source: ../php
+#source: ../libs
 # Use a generated source tree directory
 
 # Directory where to save the generated documentation

@@ -271,7 +271,7 @@ Construct the class using old and new behavior
 				if ($timeout_retries > -1 && $this->event_handler !== NULL) { $this->event_handler->error("#echo(__FILEPATH__)# -file->lock()- reporting: File lock change failed"); }
 			}
 		}
-		elseif ($this->event_handler !== NULL) { $this->event_handler->warn("#echo(__FILEPATH__)# -file->lock()- reporting: File resource invalid"); }
+		elseif ($this->event_handler !== NULL) { $this->event_handler->warning("#echo(__FILEPATH__)# -file->lock()- reporting: File resource invalid"); }
 
 		return $return;
 	}
@@ -454,7 +454,7 @@ want to delete unneeded files.
 			else { $return = false; }
 
 			if ($return) { $this->resource = @fopen($file_pathname, $file_mode); }
-			elseif ($this->event_handler !== NULL) { $this->event_handler->warn("#echo(__FILEPATH__)# -file->open()- reporting: Failed opening $file_pathname - file does not exist"); }
+			elseif ($this->event_handler !== NULL) { $this->event_handler->warning("#echo(__FILEPATH__)# -file->open()- reporting: Failed opening $file_pathname - file does not exist"); }
 
 			if (is_resource($this->resource))
 			{
@@ -471,7 +471,7 @@ want to delete unneeded files.
 			else
 			{
 				$this->resource_file_pathname = "";
-				if (!$exists) { @unlink($file_pathname); }
+				if ((!$exists) && (!$this->readonly)) { @unlink($file_pathname); }
 			}
 		}
 

@@ -91,6 +91,10 @@ class directFile
 	* @var mixed $umask umask to set before creating a new file
 */
 	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $umask;
+/**
+	* @var boolean $use_lock_file True to write lock files
+*/
+	/*#ifndef(PHP4) */protected/* #*//*#ifdef(PHP4):var:#*/ $use_lock_file = false;
 
 /* -------------------------------------------------------------------------
 Construct the class using old and new behavior
@@ -112,7 +116,6 @@ Construct the class using old and new behavior
 		$this->chmod = $chmod;
 		$this->event_handler = $event_handler;
 		$this->readonly = false;
-		$this->resource = NULL;
 		$this->resource_file_pathname = "";
 		$this->resource_lock = "r";
 		$this->timeout_retries = $timeout_retries;
@@ -166,10 +169,7 @@ Construct the class using old and new behavior
 
 			$return = fclose($this->resource);
 
-			if ($this->resource_lock == "w" && USE_file_locking_alternative)
-			{
-				if (file_exists($this->resource_file_pathname.".lock")) { @unlink($this->resource_file_pathname.".lock"); }
-			}
+			if ($this->resource_lock == "w" && $this->use_lock_file && file_exists($this->resource_file_pathname.".lock")) { @unlink($this->resource_file_pathname.".lock"); }
 
 			if ((!$this->readonly) && $delete_empty && (!$file_position))
 			{
@@ -230,6 +230,18 @@ Construct the class using old and new behavior
 	}
 
 /**
+	* This method can be used to check the use of lock files.
+	*
+	* @return boolean Use lock file active
+	* @since  v0.1.00
+*/
+	/*#ifndef(PHP4) */public /* #*/function getUseLockFile()
+	{
+		if ($this->event_handler !== NULL) { $this->event_handler->debug("#echo(__FILEPATH__)# -file->getUseLockFile()- (#echo(__LINE__)#)"); }
+		return $this->use_lock_file;
+	}
+
+/**
 	* Changes file locking if needed.
 	*
 	* @param  string $mode The requested file locking mode ("r" or "w").
@@ -280,8 +292,7 @@ Construct the class using old and new behavior
 	* Runs flock or an alternative locking mechanism.
 	*
 	* @param  string $mode The requested file locking mode ("r" or "w").
-	* @param  string $file_pathname Alternative path to the locking file (used
-	*         for USE_file_locking_alternative)
+	* @param  string $file_pathname Alternative path to the locking file
 	* @return boolean True on success
 	* @since  v0.1.00
 */
@@ -295,7 +306,7 @@ Construct the class using old and new behavior
 		if (strlen($file_pathname) && is_resource($this->resource))
 		{
 			if ($mode == "w" && $this->readonly) { $return = false; }
-			elseif (USE_file_locking_alternative)
+			elseif ($this->use_lock_file)
 			{
 /* -------------------------------------------------------------------------
 Cached file system statistics are great - but not in this case where we
@@ -407,8 +418,20 @@ want to delete unneeded files.
 */
 	/*#ifndef(PHP4) */public /* #*/function setEventHandler($event_handler)
 	{
-		if ($event_handler !== NULL) { $event_handler->debug("#echo(__FILEPATH__)# -basicRfcFunctions->setEventHandler(+event_handler)- (#echo(__LINE__)#)"); }
+		if ($event_handler !== NULL) { $event_handler->debug("#echo(__FILEPATH__)# -file->setEventHandler(+event_handler)- (#echo(__LINE__)#)"); }
 		$this->event_handler = $event_handler;
+	}
+
+/**
+	* This method can be used to activate the use of lock files.
+	*
+	* @param boolean $use_lock_file Use lock file
+	* @since v0.1.00
+*/
+	/*#ifndef(PHP4) */public /* #*/function setUseLockFile($use_lock_file)
+	{
+		if ($this->event_handler !== NULL) { $this->event_handler->debug("#echo(__FILEPATH__)# -file->setUseLockFile(+use_lock_file)- (#echo(__LINE__)#)"); }
+		$this->use_lock_file = $use_lock_file;
 	}
 
 /**
@@ -523,7 +546,5 @@ want to delete unneeded files.
 		return $return;
 	}
 }
-
-if (!defined("USE_file_locking_alternative")) { define("USE_file_locking_alternative", false); }
 
 //j// EOF
